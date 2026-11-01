@@ -1,0 +1,282 @@
+<html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Lanthe - නිල AI පුවත් නාලිකාව</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0b0f19',
+                        cardBg: '#131c2e',
+                        accent: '#3b82f6',
+                        accentHover: '#2563eb'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-darkBg text-slate-100 min-h-screen font-sans selection:bg-accent selection:text-white">
+
+    <!-- ශීර්ෂකය (Header) -->
+    <header class="border-b border-slate-800 bg-cardBg/50 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-600 to-accent flex items-center justify-center shadow-lg shadow-accent/20 border border-white/10 text-white font-bold text-lg">
+                    AI
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">AI Lanthe</h1>
+                    <p class="text-xs text-slate-400">නිල AI පුවත් නාලිකාව</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <a href="https://whatsapp.com/channel/0029Vb92csQGzzKJJysp4n0b" target="_blank"
+                    class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-2 rounded-xl flex items-center gap-1.5 transition font-medium">
+                    <span>📢</span> WhatsApp
+                </a>
+                <button id="adminToggleBtn" onclick="toggleAdminMode()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl border border-slate-700 transition">
+                    🔒 Admin
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ප්‍රධාන අන්තර්ගතය -->
+    <main class="max-w-4xl mx-auto px-4 py-8 space-y-8">
+        
+        <!-- Admin පුවත් එක් කිරීමේ පෝරමය -->
+        <section id="adminPanel" class="hidden bg-cardBg border border-accent/30 p-6 rounded-2xl shadow-xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h2 class="text-base font-semibold text-accent flex items-center gap-2">
+                    <span>✍️</span> නව පුවතක් පල කරන්න (Admin Only)
+                </h2>
+                <button onclick="adminLogout()" class="text-xs text-rose-400 hover:underline">Logout වන්න</button>
+            </div>
+
+            <form id="newsForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">මාතෘකාව (Headline)</label>
+                    <input type="text" id="title" required placeholder="පුවත් මාතෘකාව මෙහි ලියන්න..." 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">ප්‍රවර්ගය (Category)</label>
+                        <select id="category" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent text-slate-300">
+                            <option value="තාක්ෂණය (Tech)">තාක්ෂණය (Tech)</option>
+                            <option value="AI මෙවලම් (Tools)">AI මෙවලම් (Tools)</option>
+                            <option value="විශේෂ පුවත් (Updates)">විශේෂ පුවත් (Updates)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">වැඩිදුර විස්තර සඳහා Link (විකල්ප)</label>
+                        <input type="url" id="link" placeholder="https://example.com" 
+                            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">විස්තරය (Content)</label>
+                    <textarea id="content" rows="4" required placeholder="ප්‍රවෘත්තියේ සම්පූර්ණ විස්තරය..." 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent resize-none"></textarea>
+                </div>
+
+                <button type="submit" 
+                    class="w-full bg-accent hover:bg-accentHover text-white font-medium py-3 rounded-xl transition duration-200 shadow-lg shadow-accent/20 flex items-center justify-center gap-2">
+                    <span>🚀</span> පුවත Publish කරන්න
+                </button>
+            </form>
+        </section>
+
+        <!-- සෙවුම් තීරුව සහ පුවත් නරඹන කොටස -->
+        <section class="space-y-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <h2 class="text-lg font-semibold flex items-center gap-2">
+                    <span>📰</span> නවතම පුවත් <span id="postCount" class="text-xs text-slate-400 font-normal">(0)</span>
+                </h2>
+                
+                <div class="w-full md:w-72">
+                    <input type="text" id="searchInput" oninput="renderPosts()" placeholder="🔍 පුවත් සෙවීම සඳහා ලියන්න..." 
+                        class="w-full bg-cardBg border border-slate-800 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-accent text-slate-200">
+                </div>
+            </div>
+
+            <div id="newsFeed" class="space-y-4">
+                <!-- පුවත් මෙහි පෙන්වනු ඇත -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- පාදකය (Footer) -->
+    <footer class="border-t border-slate-800 mt-20 py-6 text-center text-xs text-slate-500">
+        <p>&copy; 2026 AI Lanthe. සියලු හිමිකම් ඇවිරිණි.</p>
+    </footer>
+
+    <!-- JavaScript කේතය -->
+    <script>
+        let posts = JSON.parse(localStorage.getItem('ai_lanthe_posts')) || [];
+        let isAdmin = localStorage.getItem('ai_lanthe_is_admin') === 'true';
+
+        const adminPanel = document.getElementById('adminPanel');
+        const adminToggleBtn = document.getElementById('adminToggleBtn');
+        const newsForm = document.getElementById('newsForm');
+        const newsFeed = document.getElementById('newsFeed');
+        const postCount = document.getElementById('postCount');
+        const searchInput = document.getElementById('searchInput');
+
+        function updateAdminUI() {
+            if (isAdmin) {
+                adminPanel.classList.remove('hidden');
+                adminToggleBtn.textContent = "🔓 Admin Active";
+                adminToggleBtn.classList.add('bg-blue-600/20', 'border-blue-500');
+            } else {
+                adminPanel.classList.add('hidden');
+                adminToggleBtn.textContent = "🔒 Admin";
+                adminToggleBtn.classList.remove('bg-blue-600/20', 'border-blue-500');
+            }
+            renderPosts();
+        }
+
+        function toggleAdminMode() {
+            if (isAdmin) {
+                if (confirm('Admin mode එකෙන් ඉවත් වීමට අවශ්‍ය ද?')) {
+                    isAdmin = false;
+                    localStorage.setItem('ai_lanthe_is_admin', 'false');
+                    updateAdminUI();
+                }
+            } else {
+                let password = prompt("Admin මුරපදය (Password) ඇතුළත් කරන්න:");
+                if (password === "ianthe123") { 
+                    isAdmin = true;
+                    localStorage.setItem('ai_lanthe_is_admin', 'true');
+                    updateAdminUI();
+                    alert("සාර්ථකව Admin ලෙස Log විය!");
+                } else if (password !== null) {
+                    alert("වැරදි මුරපදයකි!");
+                }
+            }
+        }
+
+        function adminLogout() {
+            isAdmin = false;
+            localStorage.setItem('ai_lanthe_is_admin', 'false');
+            updateAdminUI();
+        }
+
+        newsForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!isAdmin) return;
+
+            const title = document.getElementById('title').value;
+            const category = document.getElementById('category').value;
+            const content = document.getElementById('content').value;
+            const link = document.getElementById('link').value;
+
+            const newPost = {
+                id: Date.now(),
+                title,
+                category,
+                content,
+                link,
+                date: new Date().toLocaleDateString('si-LK', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+            };
+
+            posts.unshift(newPost);
+            localStorage.setItem('ai_lanthe_posts', JSON.stringify(posts));
+            renderPosts();
+            newsForm.reset();
+            alert("පුවත සාර්ථකව Publish කරන ලදී!");
+        });
+
+        function deletePost(id) {
+            if (!isAdmin) return;
+            if (confirm('මෙම පුවත මැකීමට අවශ්‍ය බව විශ්වාස ද?')) {
+                posts = posts.filter(post => post.id !== id);
+                localStorage.setItem('ai_lanthe_posts', JSON.stringify(posts));
+                renderPosts();
+            }
+        }
+
+        function renderPosts() {
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            
+            const filteredPosts = posts.filter(post => 
+                post.title.toLowerCase().includes(searchTerm) || 
+                post.content.toLowerCase().includes(searchTerm) ||
+                post.category.toLowerCase().includes(searchTerm)
+            );
+
+            postCount.textContent = `(${filteredPosts.length})`;
+
+            if (filteredPosts.length === 0) {
+                newsFeed.innerHTML = `
+                    <div class="bg-cardBg border border-slate-800 rounded-2xl p-12 text-center text-slate-500">
+                        <p class="text-3xl mb-2">📭</p>
+                        <p>පුවත් කිසිවක් හමු නොවීය.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            newsFeed.innerHTML = filteredPosts.map(post => `
+                <div class="bg-cardBg border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex justify-between items-start gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-accent/10 text-accent text-[10px] px-2.5 py-0.5 rounded-full font-medium border border-accent/20">${escapeHtml(post.category || 'තාක්ෂණය')}</span>
+                                <span class="text-xs text-slate-500">${post.date}</span>
+                            </div>
+                            <h3 class="text-base font-semibold text-white mt-1">${escapeHtml(post.title)}</h3>
+                        </div>
+                        ${isAdmin ? `<button onclick="deletePost(${post.id})" class="text-slate-500 hover:text-rose-400 p-1 text-xs">🗑️ මකන්න</button>` : ''}
+                    </div>
+                    <p class="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">${escapeHtml(post.content)}</p>
+                    ${post.link ? `<a href="${escapeHtml(post.link)}" target="_blank" class="text-xs text-accent hover:underline inline-block">මූලාශ්‍රය වෙත පිවිසෙන්න ➔</a>` : ''}
+                    
+                    <div class="border-t border-slate-800/80 pt-4 flex flex-wrap gap-2">
+                        <a href="https://api.whatsapp.com/send?text=${getWhatsAppText(post.title, post.content, post.link)}" target="_blank"
+                            class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-4 py-2 rounded-xl font-medium transition flex items-center gap-2">
+                            <span>📲</span> WhatsApp වෙත Share කරන්න
+                        </a>
+                        <button onclick="copyToClipboard('${escapeHtml(post.title)}', '${escapeHtml(post.content)}', '${escapeHtml(post.link || '')}')"
+                            class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-4 py-2 rounded-xl font-medium transition">
+                            📋 පිටපත් කරන්න (Copy)
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getWhatsAppText(title, content, link) {
+            let text = `🤖 *AI Lanthe News*\n\n*${title}*\n\n${content}`;
+            if (link) {
+                text += `\n\n🔗 වැඩිදුර විස්තර: ${link}`;
+            }
+            return encodeURIComponent(text);
+        }
+
+        function copyToClipboard(title, content, link) {
+            let text = `🤖 *AI Lanthe News*\n\n*${title}*\n\n${content}`;
+            if (link) text += `\n\n🔗 වැඩිදුර විස්තර: ${link}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('ප්‍රවෘත්තිය සාර්ථකව පිටපත් කර ගන්නා ලදී!');
+            });
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        updateAdminUI();
+    </script>
+</body>
+</html>
